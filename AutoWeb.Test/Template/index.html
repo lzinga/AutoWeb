@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>AutoWeb Unit Test Collection</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="css/simple-sidebar.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <div class="sidebar-heading">AutoWeb</div>
+      <div class="list-group list-group-flush">
+        <a href="#" class="list-group-item list-group-item-action bg-light">Base Tests</a>
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <div class="container-fluid">
+        <br />
+
+          <h1 id="hidden-title" style="display: none;">Hidden Title</h1>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+
+                    <div class="card" style="width: 18rem;">
+                        <div id="basic-card" class="card-body">
+                            <h5 class="card-title">Basic Card</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="card-link">Card link</a>
+                            <a href="#" class="card-link">Another link</a>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">Regular List</h5>
+                            <ul id="regular-list">
+                                <li id="united-states">United States</li>
+                                <li>Canada</li>
+                                <li>Netherlands</li>
+                                <li>France</li>
+                                <li>Italy</li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="col-sm">
+
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">Dynamic Content</h5>
+                            <div id="hidden-for-3-seconds" style="display: none;" class="badge badge-primary w-100">Loads in 3 seconds</div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">Buttons</h5>
+                            <button id="button-enabled" class="btn btn-primary btn-sm" type="button">Enabled</button>
+                            <button id="button-disabled" class="btn btn-primary btn-sm" disabled type="button">Disabled</button>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <div class="col-sm">
+                    One of three columns
+                </div>
+            </div>
+        </div>
+
+
+
+      </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Menu Toggle Script -->
+  <script>
+      $(document).ready(function () {
+          $("#hidden-for-3-seconds").delay(3000).fadeIn();
+      });
+
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+</body>
+
+</html>
