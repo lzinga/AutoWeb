@@ -11,14 +11,10 @@ Please feel free to open an issue or pull request. I am sure there are some thin
 can be improved in the library and I welcome any suggestions/requests.
 
 ## Why?
-I found myself in a position where I wouldn't do certain tasks because the process
-would be annoying and distract from the larger more important tasks at hand. For example, creating
-tickets in a system that was not designed for and does not work for the team I was a member of. However
-we were still required to open tickets which would take longer than the amount of time actually
-completing the work requested.
+There were many times I wanted to create a quick project that would automate a process I do often, or tasks that are cumbersome and annoying. However from my experience
+Selenium had quite a bit of overhead and can feel clunky/messy if you wanted to spin up something quickly. So here we are.
 
-This was not the only reason and instead of going on and on about the frustrations that we all face
-within our jobs. I leave you with the hopes that this library can help in some way or another.
+As an example I have to open tickets in part of my job in a system that is __not__ user friendly, does not give access to API, nor was it built with my group in mind. Alas we are still required to open tickets in said system. So... I will be using this library to automate the process to be much simpler and quicker for my team. I leave you with the hopes that this library can help in some way or another.
 
 ## Usage
 To properly load and open a browser you will need to include a web driver, by default
