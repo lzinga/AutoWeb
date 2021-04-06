@@ -59,7 +59,7 @@ jobs:
         if-no-files-found: error
         path: './AutoWeb/bin/Release/*'
         
-  # Generate a new package
+  # Deploy to GitHub Nuget
   nuget-package-github:
     runs-on: windows-latest
     needs: verify-build
@@ -77,4 +77,23 @@ jobs:
       run: echo ${{steps.download.outputs.download-path}}
     - name: Publish Nuget to GitHub registry
       run: dotnet nuget push "${{steps.download.outputs.download-path}}\*.nupkg" -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/lzinga/index.json --skip-duplicate --no-symbols true
-  # Clean up old packages.
+      
+  # Deploy to Nuget.org
+  nuget-package-deploy:
+    runs-on: windows-latest
+    needs: verify-build
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Download Artifact
+      id: download
+      uses:  actions/download-artifact@v2.0.8
+      with:
+        name: AutoWeb
+    - name: 'Echo download path'
+      run: echo ${{steps.download.outputs.download-path}}
+    - name: Publish to Nuget registry
+      run: dotnet nuget push "${{steps.download.outputs.download-path}}\*.nupkg" --api-key ${{ secrets.NUGETAPI }} --source https://api.nuget.org/v3/index.json
+
