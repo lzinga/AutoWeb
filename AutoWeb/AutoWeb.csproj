@@ -8,10 +8,9 @@
     <Company>Lzinga</Company>
     <PackageProjectUrl>https://github.com/lzinga/AutoWeb</PackageProjectUrl>
     <Version>0.0.0</Version>
-    <PackageLicenseExpression>
-    </PackageLicenseExpression>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright />
+    <Copyright>https://github.com/lzinga/AutoWeb/blob/main/NOTICE</Copyright>
+    <Description>An easy to use Selenium wrapper for page automations.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DotNetSeleniumExtras.PageObjects.Core" Version="3.12.0" />
