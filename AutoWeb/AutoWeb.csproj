@@ -18,4 +18,9 @@
     <PackageReference Include="Selenium.Support" Version="4.0.0-alpha07" />
     <PackageReference Include="Selenium.WebDriver" Version="4.0.0-alpha07" />
   </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>AutoWeb.Test</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

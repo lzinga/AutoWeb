@@ -1,4 +1,5 @@
 ﻿using AutoWeb.Common.Internal;
+using AutoWeb.Extensions;
 using AutoWeb.WebElements;
 using OpenQA.Selenium;
 using System;
@@ -30,7 +31,7 @@ namespace AutoWeb.Common.Internal
 
         public IActionable PressEnter()
         {
-            ((IWebElement)this.Element).SendKeys(Keys.Enter);
+            ((IWebElement)this.Element).SendKeys(Utilities.ToInvariantCulture(Key.Enter));
             return this;
         }
 

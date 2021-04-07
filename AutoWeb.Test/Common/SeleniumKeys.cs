@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoWeb
+namespace AutoWeb.Test.Common
 {
     /// <summary>
     /// Representations of keys able to be pressed that are not text keys for sending to the browser.
     /// </summary>
-    public static class Keys
+    public static class SeleniumKeys
     {
         /// <summary>
         /// Represents the NUL keystroke.
