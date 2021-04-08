@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoWeb.Browsers;
 using AutoWeb.Common;
 
 namespace AutoWeb
@@ -12,40 +13,47 @@ namespace AutoWeb
     /// </summary>
     public class PageCollectionOptions
     {
-        /// <summary>
-        /// The path to a selenium supported web driver.
-        /// </summary>
-        public string DriverPath { get; set; }
+        internal static PageCollectionOptions Default => new();
 
-        /// <summary>
-        /// If the <see cref="IAutoWeb"/> throws an exception the browser can remain as a process.
-        /// This options allows them to be cleaned up on every execution.
-        /// </summary>
-        public bool CleanOrphanedDrivers { get; set; }
-
-        /// <summary>
-        /// The time out for various web selection elements.
-        /// </summary>
-        public TimeSpan DefaultTimeOut { get; set; }
-
-        /// <summary>
-        /// The arguments for the browser (default --headless)
-        /// </summary>
-        public string[] BrowserArguments { get; set; }
+        internal BrowserOptions BrowserOptions { get; private set; } = new BrowserOptions();
 
 
+        public bool CleanOrphanedDrivers { get; set; } = true;
+
+
+        #region Internal Options
+        internal Type Type { get; private set; } = typeof(EdgeBrowser);
+        #endregion
+
+
+        #region Browser Configuration
         /// <summary>
-        /// Default <see cref="IAutoWeb"/> options.
+        /// Sets the browser to use. For example Edge (default), Chrome, Firefox. Driver path will need to be set in options.
         /// </summary>
-        public static PageCollectionOptions DefaultEdge => new PageCollectionOptions()
+        /// <typeparam name="T"></typeparam>
+        /// <param name="options"></param>
+        public void Browser<T>(Action<BrowserOptions> options) where T : IBrowser
         {
-            DriverPath = "msedgedriver.exe",
-            DefaultTimeOut = new TimeSpan(0, 0, 5),
-            CleanOrphanedDrivers = true,
-            BrowserArguments = new string[]
+            if(options != null)
             {
-
+                options.Invoke(BrowserOptions);
             }
-        };
+            
+            this.Type = typeof(T);
+        }
+
+        /// <summary>
+        /// Sets the browser to use. For example Edge (default), Chrome, or Firefox with the specified driver path.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="driver"></param>
+        public void Browser<T>(string driver) where T : IBrowser
+        {
+            this.Browser<T>(options =>
+            {
+                options.Driver = driver;
+            });
+        }
+        #endregion
     }
 }

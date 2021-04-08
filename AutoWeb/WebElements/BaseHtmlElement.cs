@@ -1,4 +1,5 @@
-﻿using AutoWeb.Common.Internal;
+﻿using AutoWeb.Browsers;
+using AutoWeb.Common.Internal;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;

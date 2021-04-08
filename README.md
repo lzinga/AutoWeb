@@ -19,32 +19,33 @@ As an example I have to open tickets in part of my job in a system that is __not
 ## Usage
 To properly load and open a browser you will need to include a web driver, by default
 AutoWeb uses [Selenium.WebDriver.MSEdgeDriver](https://www.nuget.org/packages/Selenium.WebDriver.MSEdgeDriver/89.0.774.54)
-as the default driver. I have not tested with other browsers but it should be possible with some slight modifications.
+as the default driver but you can view the [#tested-browsers](Tested Browsers). I have not tested with other browsers but it should be possible with some slight modifications.
 
 AutoWeb uses a `PageCollection` object to add and manage your pages.
 ```csharp
-// Creates a default page collection.
+// Creates a default page collection. (uses msedgedriver)
 new PageCollection();
 
 // Creates a page collection with configured options.
 new PageCollection(options => {
 
-    // The driver that will be used.
-    DriverPath = "msedgedriver.exe",
+    // Option #1
+    // Option to specify a different browser.
+    options.Browser<IBrowser>("chromedriver.exe")
 
-    // The timeout the page will use if not otherwise specified.
-    DefaultTimeOut = new TimeSpan(0, 0, 5),
+    // Option #2
+    // Option to specify all options for the browser
+    options.Browser<ChromeBrowser>(opts => {
+        opts.Driver = "chromedriver.exe";
+        opts.Timeout = new TimeSpan(0, 0, 30);
+        opts.Arguments = new string[] {
+            "--headless"
+        };
+    });
 
     // At times the driver will remain running in the background, this will
     // attempt to clear them before starting a new one.
-    CleanOrphanedDrivers = true,
-
-    // The browser arguments for the driver you're using.
-    // For Example: --headless
-    BrowserArguments = new string[]
-    {
-        
-    }
+    options.CleanOrphanedDrivers = true,
 });
 ```
 
@@ -135,6 +136,8 @@ browser.FindElement(Where.XPath, "//*[@id='sp_formfield_search']")
     .Click();
 ```
 
+# Tested Browsers
+The following browser drivers have been tested and currently integrated into unit tests.
 
-## Selenium Documentation 
-1. [Selenium Web Drivers](https://www.selenium.dev/documentation/en/webdriver/) - Web Driver Documentation
+1. [Selenium.WebDriver.MSEdgeDriver](https://www.nuget.org/packages/Selenium.WebDriver.MSEdgeDriver)
+1. [Selenium.WebDriver.ChromeDriver](https://www.nuget.org/packages/Selenium.WebDriver.ChromeDriver)

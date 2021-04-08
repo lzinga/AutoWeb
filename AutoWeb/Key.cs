@@ -10,9 +10,6 @@ namespace AutoWeb
     /// <summary>
     /// Representations of keys able to be pressed that are not text keys for sending to the browser.
     /// </summary>
-    /// <summary>
-    /// Representations of keys able to be pressed that are not text keys for sending to the browser.
-    /// </summary>
     public enum Key
     {
         /// <summary>

@@ -1,3 +1,4 @@
+﻿using AutoWeb.Browsers;
 using AutoWeb.WebElements;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
@@ -10,58 +11,63 @@ namespace AutoWeb.Test
     [TestClass]
     public class BrowserTests
     {
-
-        public PageCollection autoweb;
-
-
-        [TestInitialize]
-        public void Initialize()
+        [TestMethod]
+        public void TestAlternativeBrowserChrome()
         {
-            autoweb = new PageCollection();
-        }
+            var local = new PageCollection(options =>
+            {
+                options.Browser<ChromeBrowser>("chromedriver.exe");
+            });
 
-        [TestCleanup]
-        public void Cleanup()
-        {
-            autoweb.Dispose();
-        }
+            local.OpenBrowser();
 
+            var process = Process.GetProcessesByName("chromedriver");
+            Assert.IsNotNull(process);
+            Assert.IsTrue(process.Length == 1);
+
+            local.Dispose();
+            Assert.IsTrue(process[0].HasExited);
+        }
 
 
         [TestMethod]
         public void TestIfBrowserOpensAndCloses()
         {
-            autoweb.OpenBrowser();
+            var local = new PageCollection();
+            local.OpenBrowser();
             var process = Process.GetProcessesByName("msedgedriver");
             Assert.IsNotNull(process);
             Assert.IsTrue(process.Length == 1);
 
-            autoweb.Dispose();
+            local.Dispose();
             Assert.IsTrue(process[0].HasExited);
         }
 
         [TestMethod]
         public void TestBrowserNavigation()
         {
-            autoweb.OpenBrowser(Constants.TemplateFile);
+            using var local = new PageCollection();
+            local.OpenBrowser(Constants.TemplateFile);
 
-            var url = Path.GetFullPath(autoweb.Browser.Url.Replace("file:///", ""));
+            var url = Path.GetFullPath(local.Browser.Url.Replace("file:///", ""));
             Assert.IsTrue(url == Constants.TemplateFile);
         }
 
         [TestMethod]
         public void TestBrowserTryWaitFor()
         {
-            autoweb.OpenBrowser(Constants.TemplateFile);
+            using var local = new PageCollection();
+            local.OpenBrowser(Constants.TemplateFile);
 
-            var noElement = autoweb.Browser.TryWaitFor(Where.Id, "no-element-exists", out IHtmlElement element2);
+            var noElement = local.Browser.TryWaitFor(Where.Id, "no-element-exists", out IHtmlElement element2);
             Assert.IsFalse(noElement);
             Assert.IsNull(element2);
 
 
-            var found = autoweb.Browser.TryWaitFor(Where.Id, "hidden-for-3-seconds", out IHtmlElement element3);
+            var found = local.Browser.TryWaitFor(Where.Id, "hidden-for-3-seconds", out IHtmlElement element3);
             Assert.IsTrue(found);
             Assert.IsNotNull(element3);
+
         }
     }
 }

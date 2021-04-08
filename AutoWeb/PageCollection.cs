@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AutoWeb.Browsers;
 
 namespace AutoWeb
 {
@@ -22,10 +23,12 @@ namespace AutoWeb
     /// </summary>
     public class PageCollection : IAutoWeb
     {
-        List<IPage> pages = new List<IPage>();
-        private IWebDriver driver;
-        private readonly PageCollectionOptions options = new PageCollectionOptions();
+        readonly List<IPage> pages = new();
+        
+        private readonly PageCollectionOptions options = new();
         private readonly IServiceProvider provider = null;
+
+        internal IWebDriver Driver { get; private set; }
 
         public IBrowser Browser { get; private set; }
 
@@ -42,17 +45,7 @@ namespace AutoWeb
             }
             else
             {
-                this.options = PageCollectionOptions.DefaultEdge;
-            }
-
-            // TODO: Make this independent of each AutoWeb if possible.
-            if (this.options.CleanOrphanedDrivers)
-            {
-                var orphans = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(this.options.DriverPath));
-                foreach (var orphan in orphans)
-                {
-                    orphan.Kill();
-                }
+                this.options = PageCollectionOptions.Default;
             }
         }
 
@@ -61,20 +54,10 @@ namespace AutoWeb
         /// </summary>
         ~PageCollection()
         {
-            if(driver != null)
+            if(Driver != null)
             {
-                driver.Quit();
+                Driver.Quit();
             }
-        }
-
-        /// <summary>
-        /// An internal page collection used for dependency injection.
-        /// <para>I don't believe this is working 100%</para>
-        /// </summary>
-        /// <param name="provider"></param>
-        internal PageCollection(IServiceProvider provider) : this()
-        {
-            this.provider = provider;
         }
 
         /// <summary>
@@ -82,39 +65,40 @@ namespace AutoWeb
         /// </summary>
         public PageCollection() : this(options: null) { }
 
+        /// <summary>
+        /// Opens the browser configured in options. (msedgedriver is default)
+        /// </summary>
+        /// <param name="url">The url to open.</param>
         public void OpenBrowser(string url)
         {
-            string path = "";
-            string name = "";
-            if (Path.IsPathRooted(options.DriverPath))
+            // Clean 
+            if (this.options.CleanOrphanedDrivers)
             {
-                path = Path.GetFullPath(options.DriverPath);
-                name = Path.GetFileName(options.DriverPath);
-            }
-            else
-            {
-                path = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-                name = Path.GetFileName(options.DriverPath);
+                var orphans = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(this.options.BrowserOptions.Driver));
+                foreach (var orphan in orphans)
+                {
+                    // ( ͡❛ _⦣ ͡❛)
+                    orphan.Kill();
+                }
             }
 
-            // Ensure it is a driver and that the file exists.
-            var driverOptions = new EdgeOptions();
-            driverOptions.UseChromium = true;
-            if (options.BrowserArguments != null && options.BrowserArguments.Length > 0)
-            {
-                //driverOptions.AddArguments(options.BrowserArguments);
-            }
 
-            var chromeDriverService = EdgeDriverService.CreateChromiumService(path, name);
-            chromeDriverService.EnableVerboseLogging = false;
-            chromeDriverService.HideCommandPromptWindow = true;
 
-            this.driver = new EdgeDriver(chromeDriverService, driverOptions);
-            this.Browser = new DefaultBrowser(driver, options.DefaultTimeOut);
+            var browser = (Activator.CreateInstance(options.Type, new object[] {
+                options.BrowserOptions.Driver,
+                options.BrowserOptions.Timeout,
+                options.BrowserOptions.Arguments ?? Array.Empty<string>()
+            }) as Browser);
+
+            this.Driver = browser.Driver;
+            this.Browser = browser;
+
+
+
 
             if (!string.IsNullOrEmpty(url))
             {
-                this.driver.Navigate().GoToUrl(url);
+                this.Driver.Navigate().GoToUrl(url);
             }
         }
 
@@ -182,11 +166,12 @@ namespace AutoWeb
 
         public void GoTo(string url)
         {
-            if (driver == null)
+            if (this.Driver == null)
+            {
                 throw new NullReferenceException($"You must open the browser before you change the page.");
+            }
 
-
-            driver.Navigate().GoToUrl(url);
+            Driver.Navigate().GoToUrl(url);
         }
 
         /// <summary>
@@ -196,7 +181,7 @@ namespace AutoWeb
         /// <returns>The pages validation result.</returns>
         public bool Execute(Type type)
         {
-            if (driver == null || this.Browser == null)
+            if (this.Driver == null || this.Browser == null)
             {
                 throw new NullReferenceException($"The browser must be opened before executing a page.");
             }
@@ -214,18 +199,18 @@ namespace AutoWeb
                 throw new NullReferenceException($"{page.GetType().Name} does not implement the Page attribute.");
             }
 
-            driver.Url = pageInfo.Url;
+            this.Driver.Url = pageInfo.Url;
 
             // Set the default timeout for the browser instance, this can be set per page.
-            var timeout = options.DefaultTimeOut;
-            if(pageInfo.PageLoadTimeout != default(TimeSpan))
+            var timeout = options.BrowserOptions.Timeout;
+            if(pageInfo.PageLoadTimeout != default)
             {
                 timeout = pageInfo.PageLoadTimeout;
                 this.Browser.SetWaitTime(timeout);
             }
 
             // Wait for the page to load.
-            new WebDriverWait(driver, timeout).Until(
+            new WebDriverWait(this.Driver, timeout).Until(
                 d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
             // If the user specifies to wait for an element, attempt to wait for it.
@@ -239,7 +224,7 @@ namespace AutoWeb
                 }
             }
 
-            Populate(page, driver);
+            Populate(page, this.Driver);
             page.Execute(this.Browser);
 
             // Reset the wait time before moving to the next page.
@@ -252,7 +237,7 @@ namespace AutoWeb
         /// </summary>
         public void Dispose()
         {
-            driver.Quit();
+            this.Driver.Quit();
         }
         #endregion
 

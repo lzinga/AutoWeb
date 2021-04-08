@@ -1,14 +1,15 @@
-﻿using System;
+﻿using AutoWeb.WebElements;
+using OpenQA.Selenium;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoWeb.WebElements
+namespace AutoWeb.Browsers
 {
     public interface IBrowser
     {
-
         /// <summary>
         /// The current URL the browser is on.
         /// </summary>
@@ -45,6 +46,11 @@ namespace AutoWeb.WebElements
         IEnumerable<IHtmlElement> FindElementsWithText(string text);
         IHtmlElement FindElement(Where where, string value);
         IEnumerable<IHtmlElement> FindElements(Where where, string value);
+    }
 
+    internal interface IBrowserDriver
+    {
+
+        IBrowser LoadDriver(string driver, TimeSpan timeout, params string[] arguments);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AutoWeb.Example.Pages.StarRepository;
-using System;
 
 namespace AutoWeb.Example
 {
