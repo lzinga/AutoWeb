@@ -23,7 +23,7 @@ jobs:
     - name: Clean Debug
       run: dotnet clean && dotnet nuget locals all --clear
     - name: Clean Release
-      run: dotnet clean --Configuration Release && dotnet nuget locals all --clear
+      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
     - name: Restore dependencies
       run: dotnet restore
     - name: Update Version
