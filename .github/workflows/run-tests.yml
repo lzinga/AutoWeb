@@ -6,6 +6,7 @@ on:
     - '!README.md'
     - '!.github/**'
     - '!AutoWeb.Example/**'
+  workflow_dispatch:
   pull_request:
     branches: [ master ]
 jobs:
