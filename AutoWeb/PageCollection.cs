@@ -25,13 +25,14 @@ namespace AutoWeb
     {
         readonly List<IPage> pages = new();
         
-        private readonly PageCollectionOptions options = new();
+        internal PageCollectionOptions Options { get; set; } = new();
         private readonly IServiceProvider provider = null;
 
         internal IWebDriver Driver { get; private set; }
 
         public IBrowser Browser { get; private set; }
 
+        #region Constructors
         /// <summary>
         /// Creates a collection of pages which can be executed individually or all together.
         /// <para>Executes in the order of insertion.</para>
@@ -39,24 +40,13 @@ namespace AutoWeb
         /// <param name="options">The options to configure your execution.</param>
         public PageCollection(Action<PageCollectionOptions> options)
         {
-            if(options != null)
+            if (options != null)
             {
-                options.Invoke(this.options);
+                options.Invoke(this.Options);
             }
             else
             {
-                this.options = PageCollectionOptions.Default;
-            }
-        }
-
-        /// <summary>
-        /// Quits out of the browser.
-        /// </summary>
-        ~PageCollection()
-        {
-            if(Driver != null)
-            {
-                Driver.Quit();
+                this.Options = PageCollectionOptions.Default;
             }
         }
 
@@ -66,15 +56,65 @@ namespace AutoWeb
         public PageCollection() : this(options: null) { }
 
         /// <summary>
+        /// Quits out of the browser.
+        /// </summary>
+        ~PageCollection()
+        {
+            if (Driver != null)
+            {
+                Driver.Quit();
+            }
+        }
+        #endregion
+
+        #region Static
+        public static IAutoWeb Create<T>(string driver) where T : IBrowser
+        {
+            return new PageCollection(options =>
+            {
+                options.Browser<T>(opts =>
+                {
+                    opts.Driver = driver;
+                });
+            });
+        }
+
+        public static IAutoWeb Create<T>(string driver, TimeSpan timeout) where T : IBrowser
+        {
+            return new PageCollection(options =>
+            {
+                options.Browser<T>(opts =>
+                {
+                    opts.Driver = driver;
+                    opts.Timeout = timeout;
+                });
+            });
+        }
+
+        public static IAutoWeb Create<T>(string driver, TimeSpan timeout, params string[] arguments) where T : IBrowser
+        {
+            return new PageCollection(options =>
+            {
+                options.Browser<T>(opts =>
+                {
+                    opts.Driver = driver;
+                    opts.Timeout = timeout;
+                    opts.Arguments = arguments;
+                });
+            });
+        }
+        #endregion
+
+        /// <summary>
         /// Opens the browser configured in options. (msedgedriver is default)
         /// </summary>
         /// <param name="url">The url to open.</param>
         public void OpenBrowser(string url)
         {
             // Clean 
-            if (this.options.CleanOrphanedDrivers)
+            if (this.Options.CleanOrphanedDrivers)
             {
-                var orphans = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(this.options.BrowserOptions.Driver));
+                var orphans = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(this.Options.BrowserOptions.Driver));
                 foreach (var orphan in orphans)
                 {
                     // ( ͡❛ _⦣ ͡❛)
@@ -83,18 +123,14 @@ namespace AutoWeb
             }
 
 
-
-            var browser = (Activator.CreateInstance(options.Type, new object[] {
-                options.BrowserOptions.Driver,
-                options.BrowserOptions.Timeout,
-                options.BrowserOptions.Arguments ?? Array.Empty<string>()
+            var browser = (Activator.CreateInstance(Options.Type, new object[] {
+                Options.BrowserOptions.Driver,
+                Options.BrowserOptions.Timeout,
+                Options.BrowserOptions.Arguments ?? Array.Empty<string>()
             }) as Browser);
 
             this.Driver = browser.Driver;
             this.Browser = browser;
-
-
-
 
             if (!string.IsNullOrEmpty(url))
             {
@@ -104,6 +140,9 @@ namespace AutoWeb
 
         public void OpenBrowser() => this.OpenBrowser(string.Empty);
 
+        /// <summary>
+        /// Populates the IPage properties with the elements found on the page.
+        /// </summary>
         private IPage Populate(IPage page, IWebDriver driver)
         {
             var elements = page.GetType().GetProperties().Where(i => i.GetCustomAttribute<FindWhereAttribute>() != null);
@@ -119,7 +158,6 @@ namespace AutoWeb
                 {
                     // Leave it as an empty element.
                 }
-
             }
 
             return page;
@@ -202,7 +240,7 @@ namespace AutoWeb
             this.Driver.Url = pageInfo.Url;
 
             // Set the default timeout for the browser instance, this can be set per page.
-            var timeout = options.BrowserOptions.Timeout;
+            var timeout = Options.BrowserOptions.Timeout;
             if(pageInfo.PageLoadTimeout != default)
             {
                 timeout = pageInfo.PageLoadTimeout;

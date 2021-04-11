@@ -1,4 +1,5 @@
-﻿using AutoWeb.Example.Pages.StarRepository;
+﻿using AutoWeb.Browsers;
+using AutoWeb.Example.Pages.StarRepository;
 
 namespace AutoWeb.Example
 {

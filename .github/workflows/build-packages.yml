@@ -1,15 +1,9 @@
 name: Build-Packages
 on:
-  push:
-    branches: [ master ]
-    paths:
-    - 'AutoWeb/**'
-    - 'AutoWeb.Test/**'
   pull_request:
     branches: [ master ]
     paths:
     - 'AutoWeb/**'
-    - 'AutoWeb.Test/**'
   workflow_dispatch:
 jobs:
   verify-build:
@@ -20,10 +14,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Clean Debug
-      run: dotnet clean && dotnet nuget locals all --clear
-    - name: Clean Release
-      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
     - name: Restore dependencies
       run: dotnet restore
     - name: Update Version
@@ -45,7 +35,6 @@ jobs:
           $csproj.SelectSingleNode("//Version").InnerText = $ver
           Write-ActionInfo "Version: $ver"
           $csproj.Save($file.FullName)
-
           return 0
       continue-on-error: false
     - name: Build Debug
@@ -100,4 +89,3 @@ jobs:
       run: echo ${{steps.download.outputs.download-path}}
     - name: Publish to Nuget registry
       run: dotnet nuget push "${{steps.download.outputs.download-path}}\*.nupkg" --api-key ${{ secrets.NUGETAPI }} --source https://api.nuget.org/v3/index.json
-
