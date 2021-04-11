@@ -17,14 +17,12 @@ namespace AutoWeb
 
         internal BrowserOptions BrowserOptions { get; private set; } = new BrowserOptions();
 
-
         public bool CleanOrphanedDrivers { get; set; } = true;
 
 
         #region Internal Options
         internal Type Type { get; private set; } = typeof(EdgeBrowser);
         #endregion
-
 
         #region Browser Configuration
         /// <summary>
@@ -40,6 +38,22 @@ namespace AutoWeb
             }
             
             this.Type = typeof(T);
+        }
+
+        public void Browser<T>(TimeSpan timeout) where T : IBrowser
+        {
+            this.Browser<T>(options =>
+            {
+                options.Timeout = timeout;
+            });
+        }
+
+        public void Browser<T>(params string[] arguments) where T : IBrowser
+        {
+            this.Browser<T>(options =>
+            {
+                options.Arguments = arguments;
+            });
         }
 
         /// <summary>

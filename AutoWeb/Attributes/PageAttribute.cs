@@ -34,6 +34,14 @@ namespace AutoWeb.Attributes
             Url = url;
         }
 
+
+        /// <summary>
+        /// Defines a pages metadata.
+        /// </summary>
+        /// <param name="url">The URL the page will open.</param>
+        /// <param name="pageLoadTimeout">The time in seconds how long the page should take before timing out.</param>
+        public PageAttribute(string url, int pageLoadTimeout) : this(string.Empty, url, pageLoadTimeout) { }
+
         /// <summary>
         /// Defines a pages metadata.
         /// </summary>

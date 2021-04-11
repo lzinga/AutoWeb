@@ -1,14 +1,5 @@
 name: Run-Tests
-on:
-  push:
-    branches: [ master ]
-    paths:
-    - '!README.md'
-    - '!.github/**'
-    - '!AutoWeb.Example/**'
-  workflow_dispatch:
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 jobs:
   build:
     runs-on: windows-latest
