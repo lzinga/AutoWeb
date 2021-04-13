@@ -10,6 +10,7 @@ namespace AutoWeb.WebElements
     {
         IActionable PressEnter();
         IActionable Wait(int milliseconds);
+        IActionable WaitForElement(Where where, string value);
         IActionable Submit();
     }
 }

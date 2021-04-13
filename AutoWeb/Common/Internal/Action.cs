@@ -48,5 +48,11 @@ namespace AutoWeb.Common.Internal
             Thread.Sleep(milliseconds);
             return this;
         }
+
+        public IActionable WaitForElement(Where where, string value)
+        {
+            Browser.WaitFor(where, value);
+            return this;
+        }
     }
 }
