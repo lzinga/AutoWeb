@@ -54,5 +54,21 @@ namespace AutoWeb.Common.Internal
             Browser.WaitFor(where, value);
             return this;
         }
+
+        public IActionable WaitToBeInteractable(TimeSpan timeout)
+        {
+            var end = DateTime.Now.Add(timeout);
+            while (!Element.IsInteractive || DateTime.Now <= end)
+            {
+                Thread.Sleep(500);
+            }
+
+            if (Element.IsInteractive)
+            {
+                return this;
+            }
+
+            throw new InvalidOperationException($"The element is not interactable before the timeout.");
+        }
     }
 }

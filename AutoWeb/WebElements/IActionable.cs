@@ -11,6 +11,9 @@ namespace AutoWeb.WebElements
         IActionable PressEnter();
         IActionable Wait(int milliseconds);
         IActionable WaitForElement(Where where, string value);
+
+        IActionable WaitToBeInteractable() => WaitToBeInteractable(new TimeSpan(0, 0, 30));
+        IActionable WaitToBeInteractable(TimeSpan timeout);
         IActionable Submit();
     }
 }
