@@ -32,6 +32,9 @@ As an example I have to open tickets in part of my job in a system that is __not
 1. [Wiki Documentation](https://github.com/lzinga/AutoWeb/wiki)
 
 ## Usage
+
+__Only basic usage is the readme, view the wiki for more detailed information.__
+
 To properly load and open a browser you will need to include a web driver, by default
 AutoWeb uses [Selenium.WebDriver.MSEdgeDriver](https://www.nuget.org/packages/Selenium.WebDriver.MSEdgeDriver/89.0.774.54)
 as the default driver but you can view the [#tested-browsers](Tested Browsers). I have not tested with other browsers but it should be possible with some slight modifications.
@@ -88,59 +91,7 @@ pages.Execute<LoginPage>();
 
 ```
 
-
-## Pages
-To create a page you must create a class which implements `IPage` and apply the
-`PageAttribute` to it. You can view an example of a page below or within the example project
-included in the solution.
-
-```csharp
-[Page("Login", "https://github.com/login")]
-public class LoginPage : IPage
-{
-    [FindWhere(Where.Name, "login")]
-    public IHtmlElement Username { get; set; }
-
-    [FindWhere(Where.Name, "password")]
-    public IHtmlElement Password { get; set; }
-
-    [FindWhere(Where.Name, "commit")]
-    public IHtmlElement Submit { get; set; }
-
-    // When the page is called to execute this is the process
-    // that will be executed.
-    public void Execute(IBrowser browser)
-    {
-        Username.SendKeys("<your username>");
-        Password.SendKeys("<your password>");
-        Submit.Click();
-    }
-
-    // When the page is complete this must return true before it
-    // continues to the next page (if executing many)
-    public bool Validate(IBrowser browser)
-    {
-            
-        // Before moving to the next page, wait for the profile image to appear.
-        return browser.TryWaitFor(Where.Css,
-            "body > div.position-relative.js-header-wrapper > header > div.Header-item.position-relative.mr-0.d-none.d-md-flex > details > summary > img",
-            out IHtmlElement _);
-    }
-}
-```
-
-##### Attributes
-`PageAttribute` - Used to specify the pages metadata.
-1. `Name`: The friendly name of the page that will be loaded.
-2. `Url`: The URL that will be navigated too when this page is executed.
-3. `pageLoadTimeout`: The individual load time for this page, does not affect other pages.. (Defaults to PageCollectionOptions)
-
-`WaitForElementAttribute` - Applies to the Page class to wait for the specified element before executing. (Uses page timeout if specified)
-1. `Where`: The defining type of how the selection will be found.
-2. `Value`: The query used for selecting the element. (For Example - XPath, CSS, Class, etc)
-
-`FindWhereAttribute` - Applies to Page properties to load the html element on page load.
-##### Chain Commands
+## Fluent Control
 When writing automation for a page things can get messy pretty quickly if the website has you jump
 around a lot. You can chain commands like in the example below.
 ```csharp
